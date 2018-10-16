@@ -1,9 +1,11 @@
 import sys
-import correspondance
+import morph
+import meanFace
 
 
 def init():
-    correspondance.init()
+    # morph.init()
+    meanFace.init()
 
 
 if __name__ == "__main__":
