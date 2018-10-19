@@ -5,8 +5,9 @@ from utils import Profiler
 import numpy as np
 import morph
 from morph import makeInterp
-from utils import show
 import scipy
+import json
+
 
 
 def getPoints(path):
@@ -74,33 +75,64 @@ def daisyChainMulti(images, points):
     plt.imshow(A, cmap='Greys_r')
     plt.show()
 
+def morphSiblings():
+    pathFaces = 'in/siblings/'
+    pathPoints = 'out/stephanie-carol-alex.json'
+    outPath = 'out/siblings/'
+    fileName = 'meanFace'
+    images = []
+    points = []
+
+    with open(pathPoints, 'rt') as file:
+        coords = json.load(file)
+
+    for file in listdir(pathFaces):
+        if '.jpg' in file:
+            img = p.normalize(plt.imread(pathFaces + file))
+            pts = coords[file.split('.')[0]]
+            points.append(pts)
+            images.append(img)
+
+    images = np.stack(images)
+    points = np.stack(points)
+
+    A, vtxA = warpBaryMulti(images, points, 1, 1)
+
+    morph.saveJSON(vtxA, outPath, fileName)
+    morph.storeImg(A, outPath, fileName)
+
+    plt.imshow(A, cmap='Greys_r')
+    plt.show()
+
 def init():
 
-    with Profiler():
-        pathFaces = 'in/brazil_subset/'
-        pathPoints = 'in/brazil_faces_pts/'
-        outPath = 'out/brazil_faces/'
-        fileName = 'meanFace'
-        images = []
-        points = []
-        for file in listdir(pathFaces):
-            if 'a' in file:
-                img = p.normalize(plt.imread(pathFaces + file))
-                pts = getPoints(pathPoints + file.split('.')[0] + '.pts')
-                corners = [(0, 0), (0, img.shape[0] - 1), (img.shape[1] - 1, 0), (img.shape[1] - 1, img.shape[0] - 1)]
-                pts = np.append(corners, pts, axis=0)
-                points.append(pts)
-                images.append(img)
+    morphSiblings()
 
-        images = np.stack(images)
-        points = np.stack(points)
-
-        # daisyChainMulti(images, points)
-        A, vtxA = warpBaryMulti(images, points, 1, 1)
-
-        morph.saveJSON(vtxA, outPath, fileName)
-        morph.storeImg(A, outPath, fileName)
-
-        plt.imshow(A, cmap='Greys_r')
-        plt.show()
+    # with Profiler():
+    #     pathFaces = 'in/brazil_subset_fem/'
+    #     pathPoints = 'in/brazil_faces_pts/'
+    #     outPath = 'out/brazil_faces_fem/'
+    #     fileName = 'meanFace'
+    #     images = []
+    #     points = []
+    #     for file in listdir(pathFaces):
+    #         if 'a' in file:
+    #             img = p.normalize(plt.imread(pathFaces + file))
+    #             pts = getPoints(pathPoints + file.split('.')[0] + '.pts')
+    #             corners = [(0, 0), (0, img.shape[0] - 1), (img.shape[1] - 1, 0), (img.shape[1] - 1, img.shape[0] - 1)]
+    #             pts = np.append(corners, pts, axis=0)
+    #             points.append(pts)
+    #             images.append(img)
+    #
+    #     images = np.stack(images)
+    #     points = np.stack(points)
+    #
+    #     # daisyChainMulti(images, points)
+    #     A, vtxA = warpBaryMulti(images, points, 1, 1)
+    #
+    #     morph.saveJSON(vtxA, outPath, fileName)
+    #     morph.storeImg(A, outPath, fileName)
+    #
+    #     plt.imshow(A, cmap='Greys_r')
+    #     plt.show()
 

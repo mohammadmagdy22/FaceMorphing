@@ -1,0 +1,339 @@
+<!-------------------------------------
+Hello there, I see you're interested in my code.
+Well, just so you know this website was written in 100% html and css. No templates, javascript, or anything fancy.
+I could make it a template though...
+Here is my website in case you want to see what else I do: www.cdste.com
+-------------------------------------->
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <title>Stephanie Claudino Daffara| CS 194</title>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="style.css" media="screen"/>
+</head>
+<body>
+<br/>
+<div class="container">
+    <h1>CS 194 Project 4</h1>
+    <h2 class="title">Face Morphing</h2>
+    <h3 class="author">By Stephanie Claudino Daffara</h3>
+    <div class="hidden-thing"></div>
+    <p>
+        This assignment explored morphing animation between images' corresponding points, computing
+        the mean between images, and playing around a bit with caricatures.
+    </p>
+
+    <h2 class=".parts">The Morph Sequence</h2>
+        <p>
+            In order to compute a morph between image A and image B, first we must find a "Mid-Face". This image
+            is a half-way mix between two images. In order to create it I had to
+            find the mid points between the two images' correspondence points and
+            compute triangulation. I used
+            <a target="_blank" href="https://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.spatial.Delaunay.html">scipy's Delaunay</a>
+            function to compute the triangulations. Then for each point in each triangulation
+            in each image, I computed the barycentric coordinates in respect to the mid-face triangles
+            and used those to linearly interpolate the corresponding points in image A and image B.
+            Finally, in order to account for points that are not integers, I used
+            <a target="_blank" href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.interpolate.RectBivariateSpline.html">scipy's interpolate</a>
+            function to find the best integer pixel value from both image A and image B.
+            Finally I added the corresponding pixel values between image A and image B and averaged them
+            to get a final mean result.
+        </p>
+        <p>
+            Here is a mid-face morph between Adrien Brody, photographed by Martin Shoeller, and an image of myself.
+        </p>
+        <div class="content--fullwidth bottom-padding-20 scaledown-3">
+            <div class="row">
+                <div class="column">
+                <div class="img-box">
+                    <img class="hover-image" src="images/midface/me.jpg" align="middle"/>
+                    <div class="overlay-image">
+                        <div class="text">
+                            <p>Image of myself</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="img-box">
+                    <img class="hover-image" src="images/midface/adrian.jpg" align="middle"/>
+                    <div class="overlay-image">
+                        <div class="text">
+                            <p>Image of Adrian Brody</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="img-box">
+                    <img class="hover-image" src="images/midface/ste-martin-mix.jpg" align="middle"/>
+                    <div class="overlay-image">
+                        <div class="text">
+                            <p>Mid-face of Adrian and myself.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            </div>
+        </div>
+
+        <p>
+            Next I worked on creating a morph sequence between two images. This was simply executing the <code>morph</code>
+            function I wrote for the mid-face above, except that now I use a <code>warp constant</code> that goes from 1 to
+            0 incrementing in steps of <code>1/(frames / second)</code>. Some results I got are shown below.
+        </p>
+
+        <div class="content--fullwidth bottom-padding-20 scaledown-3">
+            <div class="row">
+                <div class="column">
+                <div class="img-box">
+                    <img class="hover-image" src="images/morphseq/carol_ste.jpg" align="middle"/>
+                    <div class="overlay-image">
+                        <div class="text">
+                            <p>Start image</p>
+                            <p>Picture of my sister</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="img-box">
+                    <img class="hover-image" src="images/morphseq/ste_carol2.jpg" align="middle"/>
+                    <div class="overlay-image">
+                        <div class="text">
+                            <p>End Image</p>
+                            <p>Picture of Myself</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="img-box">
+                    <img class="hover-image" src="images/morphseq/carol-ste.gif" align="middle"/>
+                    <div class="overlay-image">
+                        <div class="text">
+                            <p>Video of morphing my sister into myself.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            </div>
+        </div>
+        <p>
+            I thought it would be fun to experiment on showing someone throughout time (in this case myself). So the first
+            image is a picture of me when I was a kid, and the second picture is an image of me now. The result is kind of
+            like a time-lapse!
+        </p>
+        <div class="content--fullwidth bottom-padding-20 scaledown-3">
+            <div class="row">
+                <div class="column">
+                <div class="img-box">
+                    <img class="hover-image" src="images/morphseq/child-ste.jpg" align="middle"/>
+                    <div class="overlay-image">
+                        <div class="text">
+                            <p>Start image</p>
+                            <p>Picture of myself as a kid.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="img-box">
+                    <img class="hover-image" src="images/morphseq/ste-child.jpg" align="middle"/>
+                    <div class="overlay-image">
+                        <div class="text">
+                            <p>End Image</p>
+                            <p>Picture of Myself today</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="img-box">
+                    <img class="hover-image" src="images/morphseq/baby-ste.gif" align="middle"/>
+                    <div class="overlay-image">
+                        <div class="text">
+                            <p>Gif of morphing my younger self into today.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            </div>
+
+</div>
+
+        <h3>Avoiding For loops</h3>
+        <p>
+            In the class slides this morph function is said to need two for loops. Prof. Efros mentioned in class that
+            if you could do it in a single for-loop he would give extra points. Well, I made it my goal to vectorize the #$%@ out of my morph
+            function, and by using numpy the way its meant to be used, I achieved morphing my images using no
+            for loops at all! Both images and every thing done to either is done at the same time. The same goes for the mean
+            face below. I will talk about it and show some results soon, but keep in mind that the average of each face is
+            done all concurrently.
+        </p>
+
+    <h2 class=".parts">The Mean Face</h2>
+        <p>
+            The task for this part of the project was to select a face dataset with attributes and use it to compute
+            a "mean" face. Being Brazilian, I naturally used
+            <a target="_blank" href="https://fei.edu.br/~cet/facedatabase.html">FEI Face Database</a>.
+            Below you can see the results for the generic mean face, the male mean face, and the female mean face.
+        </p>
+        <div class="content--fullwidth bottom-padding-20 to-fit">
+            <div class="row">
+                <div class="column">
+                <div class="img-box">
+                    <img class="hover-image" src="images/mean/meanFace.jpg" align="middle"/>
+                    <div class="overlay-image">
+                        <div class="text">
+                            <p>General Mean Face</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="img-box">
+                    <img class="hover-image" src="images/mean/meanFaceMen.jpg" align="middle"/>
+                    <div class="overlay-image">
+                        <div class="text">
+                            <p>Male Mean Face</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="img-box">
+                    <img class="hover-image" src="images/mean/meanFaceFem.jpg" align="middle"/>
+                    <div class="overlay-image">
+                        <div class="text">
+                            <p>Female Mean Face</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            </div>
+        </div>
+        <p>
+            Just for fun I decided to also calculate the mean face between my siblings and I (all brazilian too).
+        </p>
+        <div class="content--fullwidth bottom-padding-20 to-fit">
+            <div class="row">
+                <div class="column">
+                <div class="img-box">
+                    <img class="hover-image" src="images/mean/A.jpg" align="middle"/>
+                    <div class="overlay-image">
+                        <div class="text">
+                            <p>Myself</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="img-box">
+                    <img class="hover-image" src="images/mean/B.jpg" align="middle"/>
+                    <div class="overlay-image">
+                        <div class="text">
+                            <p>My Sister</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="img-box">
+                    <img class="hover-image" src="images/mean/C.jpg" align="middle"/>
+                    <div class="overlay-image">
+                        <div class="text">
+                            <p>My Brother</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            </div>
+        </div>
+        <div class="content--fullwidth bottom-padding-20 to-fit">
+            <div class="row">
+                <div class="column">
+                <div class="img-box">
+                    <img class="hover-image" src="images/mean/meanFace2.jpg" align="middle"/>
+                    <div class="overlay-image">
+                        <div class="text">
+                            <p>Sibling Mean Face</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            </div>
+        </div>
+
+
+    <h2 class=".parts">Caricatures</h2>
+        <p>
+            Here I played around a bit to see how "off" my own face is from my people! I used the female brazilian
+            mean face to try and get more accurate images. The results are pretty funny, which
+            just shows how diverse us Brazilians really are. The warping factor below is how much I applied to my face, and
+            (1 - warping) is how much I applied to the mean face.
+        </p>
+        <div class="content--fullwidth bottom-padding-20 to-fit">
+            <div class="row">
+                <div class="column">
+                <div class="img-box">
+                    <img class="hover-image" src="images/caricatures/stephanie.jpg" align="middle"/>
+                    <div class="overlay-image">
+                        <div class="text">
+                            <p>Image of Myself</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="img-box">
+                    <img class="hover-image" src="images/caricatures/stephanie-meanFaceFem-warp0.5stephanie-meanFaceFem-warp0.5.jpg" align="middle"/>
+                    <div class="overlay-image">
+                        <div class="text">
+                            <p>Caricature morph!</p>
+                            <p>warping 0.5</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="img-box">
+                    <img class="hover-image" src="images/caricatures/meanFaceFem.jpg" align="middle"/>
+                    <div class="overlay-image">
+                        <div class="text">
+                            <p>Image of Average Female Face.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            </div>
+        </div>
+
+        <p>
+           In the images below you can see me playing around with extrapolating the warping constant to above and below
+            zero.
+        </p>
+        <div class="content--fullwidth bottom-padding-20 to-fit">
+            <div class="row">
+                <div class="column">
+                <div class="img-box">
+                    <img class="hover-image" src="images/caricatures/stephanie-meanFaceFem-warp-0.1stephanie-meanFaceFem-warp-0.1.jpg" align="middle"/>
+                    <div class="overlay-image">
+                        <div class="text">
+                            <p>warping -0.1</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="img-box">
+                    <img class="hover-image" src="images/caricatures/stephanie-meanFaceFem-warp1.5stephanie-meanFaceFem-warp1.5.jpg" align="middle"/>
+                    <div class="overlay-image">
+                        <div class="text">
+                            <p>warping 1.5</p>>
+                        </div>
+                    </div>
+                </div>
+                <div class="img-box">
+                    <img class="hover-image" src="images/caricatures/stephanie-meanFaceFem-warp1.8stephanie-meanFaceFem-warp1.8.jpg" align="middle"/>
+                    <div class="overlay-image">
+                        <div class="text">
+                            <p>warping 1.8</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            </div>
+        </div>
+
+
+    <h2 class=".parts">Class Morph</h2>
+
+    <p>
+       This is a class warp that I participated in! We each worked on a little chunk of it (from the person before us
+        morphed into ourselves).
+    </p>
+    <iframe width="560" height="315" src="https://www.youtube.com/embed/h-Oow96qhck" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+    <center><p>❤</p></center>
+
+</div>
+</div>
+</body>
+</html>
+

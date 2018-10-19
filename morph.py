@@ -148,7 +148,7 @@ def getMid(vtxs):
     return midVtxs, midTris
 
 
-def morph(A, B, vtxA, vtxB, warpK, dissolveK, mid=None ):
+def morph(A, B, vtxA, vtxB, warpK, dissolveK, mid=None):
     M = np.zeros(A.shape)
 
     if not mid:
@@ -189,10 +189,11 @@ def storeImgs(images, folder):
     if not os.path.exists(os.path.dirname(path)): os.mkdir(path)
     [cv.imwrite(path+'{}.jpg'.format(i), (im * 255).astype(np.uint8)) for i, im in enumerate(images, 0)]
 
+
 def storeImg(image, folder, fileName):
-    if not os.path.exists(os.path.dirname(folder)): os.mkdir(path)
+    if not os.path.exists(os.path.dirname(folder)): os.mkdir(folder)
     img = (image * 255).astype(np.uint8)
-    cv.imwrite(folder+fileName+'{}.jpg'.format(fileName), img)
+    plt.imsave(folder+'{}.jpg'.format(fileName), img)
 
 
 def morphSequence(A, B, vtxA, vtxB, framesK, out, makeVideo=False, isColor=True):
@@ -357,16 +358,16 @@ def warpInv2(A, vtxA, B, vtxB, k, t):
 
 
 def init():
-    capture = False
+    capture = True
 
-    path1 = 'in/ste-child.jpg'
-    path2 = 'in/child-ste.jpg'
+    path1 = 'in/0_me-martin.jpg'
+    path2 = 'in/0_martin-me.jpg'
     A = ops.point.normalize(plt.imread(path1))
     B = ops.point.normalize(plt.imread(path2))
     warpK = 0.5
     dissolveK = 0.5
     img1, img2 = os.path.basename(path1).split('.')[0], os.path.basename(path2).split('.')[0]
-    coordsPath = 'out/{}-{}v2.json'.format(img1, img2)
+    coordsPath = 'out/{}-{}.json'.format(img1, img2)
 
     if capture:
         coords = CorrespondenceUI(A, B, coordsPath).capture()
@@ -379,12 +380,15 @@ def init():
     outPath = '{}-{}'.format(img1, img2)
 
     with Profiler():
-        morphSequence(A, B, a, b, 2, outPath, makeVideo=True)
+        # morphSequence(A, B, a, b, 45, outPath, makeVideo=True)
 
-    # showTriangulation(A, B, a, b, 0.5)
-    # img = doColorMorph(A, B, a, b, warpK, dissolveK)
-    # img = warpInv2(A, a, B, b, 1, 0.5)
-    # img = morph(A, B, a, b, warpK, dissolveK)
+        # showTriangulation(A, B, a, b, 0.5)
+
+        # img = doColorMorph(A, B, a, b, warpK, dissolveK)
+        # img = warpInv2(A, a, B, b, 1, 0.5)
+        img = morph(A, B, a, b, warpK, dissolveK)
+        save = 'siblings-brazil{}'.format(warpK)
+        storeImg(img, 'out/siblings/', save)
 
     # plt.imshow(img)
     # plt.show()
