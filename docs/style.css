@@ -111,6 +111,9 @@ h3 {
     width: 250px;
 }
 
+.scaledown-4 img {
+    width: 20%;
+}
 
 @media (max-width: 800px) {
     .container {

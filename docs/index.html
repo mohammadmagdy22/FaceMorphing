@@ -78,7 +78,7 @@ Here is my website in case you want to see what else I do: www.cdste.com
         <p>
             Next I worked on creating a morph sequence between two images. This was simply executing the <code>morph</code>
             function I wrote for the mid-face above, except that now I use a <code>warp constant</code> that goes from 1 to
-            0 incrementing in steps of <code>1/(frames / second)</code>. Some results I got are shown below.
+            0 decrementing in steps of <code>1/(frames per second)</code>. Some results I got are shown below.
         </p>
 
         <div class="content--fullwidth bottom-padding-20 scaledown-3">
@@ -161,6 +161,101 @@ Here is my website in case you want to see what else I do: www.cdste.com
             face below. I will talk about it and show some results soon, but keep in mind that the average of each face is
             done all concurrently.
         </p>
+
+        <h3>Warping using Barycentric Coordinates VS Inverse Transform </h3>
+        <p>
+            I implemented two different methods for achieving image morphing. The first was demonstrated
+            above, using barycentric coordinates taken from the mid-image and using them to interpolate each
+            point in it's original image given it's triangle's vertices. The other method was creating a change
+            of basis transformation matrix that transforms a point from the mid-face into a point in the original image. This
+            matrix is composed of the product between the basis of the mid-face (which can be calculated by
+            using the three points to create your two coordinates), lets call that T0, and the basis of the original image,
+            lets call that T1. Then you multiply each pixel-point in the mid-face by <code>inverse(T0) * T1</code> and you
+            get the corresponding pixel-point in the original image.
+        </p>
+        <p>
+            From inspection and testing, it turns out that both methods return the exact same results. Also, against my
+            initial intuition, the inverse-transform method is about 10% faster than the barycentric method. Although, I
+            still rather using barycentric coordinates because the code itself is shorter, more clear, and easier to
+            work with. Here are two results comparing the two methods, demonstrating that they give the same results:
+        </p>
+        <div class="content--fullwidth bottom-padding-20 scaledown-4">
+            <div class="row">
+                <div class="column">
+                    <div class="img-box">
+                        <img class="hover-image" src="images/adrian-me/mid-way-bary.jpg" align="middle"/>
+                        <div class="overlay-image">
+                            <div class="text">
+                                <p>Midway face.</p>
+                                <p>Using barycentric coordinates.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="img-box">
+                        <img class="hover-image" src="images/adrian-me/mid-way-inverse.jpg" align="middle"/>
+                        <div class="overlay-image">
+                            <div class="text">
+                                <p>Midway face.</p>
+                                <p>Using Inverse Transformations.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="img-box">
+                        <img class="hover-image" src="images/adrian-me/adrian-bary.gif" align="middle"/>
+                        <div class="overlay-image">
+                            <div class="text">
+                                <p>Using barycentric coordinates.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="img-box">
+                        <img class="hover-image" src="images/adrian-me/adrian-inv.gif" align="middle"/>
+                        <div class="overlay-image">
+                            <div class="text">
+                                <p>Using Inverse Transformations.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <h3> Annoying issues: </h3>
+        <p>
+            You might notice in some of the videos some "jumping" effects between frames. I believe that many of
+            these issues are due to the number of points created. For example, in the image below both images have
+            different patterned backgrounds but I didn't add corresponding points to it, therefore you
+            see this "jumping" effect happen between some frames due to those points lying on top of
+            a triangulation's edge:
+        </p>
+        <div class="content--fullwidth bottom-padding-20 ">
+            <div class="row">
+                <div class="column">
+                <div class="img-box">
+                    <img class="hover-image" src="images/errors/ste-carol-triangulation.png" align="middle"/>
+                    <div class="overlay-image">
+                        <div class="text">
+                            <p>Delaunay Triangulation</p>
+                            <p>based on the points of the mid-face.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="img-box">
+                    <img class="hover-image" src="images/errors/ste-carol.gif" align="middle"/>
+                    <div class="overlay-image">
+                        <div class="text">
+                            <p>Gif demonstrating jump</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            </div>
+        </div>
+        <p>
+            Note that the black-and-white sandy noise is due to downscaling my video and converting it
+            into a gif. If you'd like to see the high-res video please email me!
+        </p>
+
 
     <h2 class=".parts">The Mean Face</h2>
         <p>
@@ -247,6 +342,51 @@ Here is my website in case you want to see what else I do: www.cdste.com
             </div>
         </div>
 
+        <p>
+            Playing around with my siblings faces made me wonder how close we are to the mean face between our
+            parents and grandparents. So I took an image of my four grandparents and my parents when they were all
+            near a similar age (around 20) and starting taking the mean between all of them. So I calculated the mean
+            between each pair of my grandparents, then I took the mean between each pair with their child (my mom and
+            my dad). Then I took the mean between those two final means and got my final family mean! Check it out:
+        </p>
+        <div class="content--fullwidth bottom-padding-20 ">
+            <div class="row">
+                <div class="column">
+                <div class="img-box">
+                    <img src="images/family/mean-family-tree.jpg" align="middle"/>
+                </div>
+            </div>
+            </div>
+        </div>
+    <p>
+        What do you think? Are my siblings mean similar to our "expected" mean based on our genes?
+        Either way, this was a fun little investigation.
+    </p>
+    <div class="content--fullwidth bottom-padding-20 to-fit">
+            <div class="row">
+                <div class="column">
+                <div class="img-box">
+                    <img class="hover-image" src="images/family/siblings_mean.jpg" align="middle"/>
+                    <div class="overlay-image">
+                        <div class="text">
+                            <p>Mean Face between my sibling and I</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="img-box">
+                    <img class="hover-image" src="images/family/final-0.5.jpg" align="middle"/>
+                    <div class="overlay-image">
+                        <div class="text">
+                            <p>Mean Family face</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            </div>
+        </div>
+
+
+
 
     <h2 class=".parts">Caricatures</h2>
         <p>
@@ -329,7 +469,9 @@ Here is my website in case you want to see what else I do: www.cdste.com
        This is a class warp that I participated in! We each worked on a little chunk of it (from the person before us
         morphed into ourselves).
     </p>
-    <iframe width="560" height="315" src="https://www.youtube.com/embed/h-Oow96qhck" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+
+
+    <center><iframe width="560" height="315" src="https://www.youtube.com/embed/h-Oow96qhck" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe></center>
     <center><p>❤</p></center>
 
 </div>

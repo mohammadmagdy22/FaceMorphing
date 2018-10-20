@@ -4,8 +4,8 @@ import meanFace
 
 
 def init():
-    # morph.init()
-    meanFace.init()
+    morph.init()
+    # meanFace.init()
 
 
 if __name__ == "__main__":

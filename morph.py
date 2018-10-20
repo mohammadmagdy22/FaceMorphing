@@ -168,7 +168,6 @@ def morph(A, B, vtxA, vtxB, warpK, dissolveK, mid=None):
     tri = midTris.simplices[triIdx]
 
     midTriPts = midVtxs[tri[:, 0]], midVtxs[tri[:, 1]], midVtxs[tri[:, 2]]
-
     bary = baryentric(np.array([x, y]).T, midTriPts[0], midTriPts[1], midTriPts[2])
 
     aTriPts = vtxA[tri[:, 0]], vtxA[tri[:, 1]], vtxA[tri[:, 2]]
@@ -179,7 +178,7 @@ def morph(A, B, vtxA, vtxB, warpK, dissolveK, mid=None):
     valA = interpA(newCoordA[:, 0], newCoordA[:, 1], grid=False)
     valB = interpB(newCoordB[:, 0], newCoordB[:, 1], grid=False)
 
-    M[y, x] = dissolveK * valA + (1 - dissolveK) * valB
+    M[y, x] = (dissolveK * valA + (1 - dissolveK) * valB)
 
     return M
 
@@ -190,17 +189,22 @@ def storeImgs(images, folder):
     [cv.imwrite(path+'{}.jpg'.format(i), (im * 255).astype(np.uint8)) for i, im in enumerate(images, 0)]
 
 
-def storeImg(image, folder, fileName):
+def storeImg(image, folder, fileName, isColor=True):
     if not os.path.exists(os.path.dirname(folder)): os.mkdir(folder)
-    img = (image * 255).astype(np.uint8)
-    plt.imsave(folder+'{}.jpg'.format(fileName), img)
+
+    if isColor :
+        image = (image * 255).astype(np.uint8)
+        plt.imsave(folder+'{}.jpg'.format(fileName), image)
+    else:
+        plt.imsave(folder+'{}.jpg'.format(fileName), image, cmap='Greys_r')
 
 
 def morphSequence(A, B, vtxA, vtxB, framesK, out, makeVideo=False, isColor=True):
     images = []
     for i in range(1, framesK + 1):
         frac = i / framesK
-        img = morph(A, B, vtxA, vtxB, frac, frac).clip(0,1)
+        # img = morph(A, B, vtxA, vtxB, frac, frac).clip(0,1)
+        img = warpInv2(A, vtxA, B, vtxB, 1, frac)
         if isColor : img = img[...,::-1]
         images.append(img)
 
@@ -356,14 +360,20 @@ def warpInv2(A, vtxA, B, vtxB, k, t):
     M[y, x] = t * aVal + (1-t) * bVal
     return M
 
+def autoContrast(img, i=(0, 1)):
+
+    return i[0] + (img - img.min()) * (i[1] - i[0]) / (img.max() - img.min())
+
 
 def init():
-    capture = True
+    capture = False
 
-    path1 = 'in/0_me-martin.jpg'
-    path2 = 'in/0_martin-me.jpg'
+
+    path1 = 'in/family/avosAndDad.jpg'
+    path2 = 'in/family/avosAndMom.jpg'
     A = ops.point.normalize(plt.imread(path1))
     B = ops.point.normalize(plt.imread(path2))
+    A, B = autoContrast(A), autoContrast(B)
     warpK = 0.5
     dissolveK = 0.5
     img1, img2 = os.path.basename(path1).split('.')[0], os.path.basename(path2).split('.')[0]
@@ -377,18 +387,17 @@ def init():
             coords = json.load(file)
 
     a, b = np.array(coords['A']), np.array(coords['B'])
-    outPath = '{}-{}'.format(img1, img2)
+    outPath = '{}-{}-inverse'.format(img1, img2)
 
     with Profiler():
         # morphSequence(A, B, a, b, 45, outPath, makeVideo=True)
 
         # showTriangulation(A, B, a, b, 0.5)
-
         # img = doColorMorph(A, B, a, b, warpK, dissolveK)
         # img = warpInv2(A, a, B, b, 1, 0.5)
         img = morph(A, B, a, b, warpK, dissolveK)
-        save = 'siblings-brazil{}'.format(warpK)
-        storeImg(img, 'out/siblings/', save)
+        save = 'final-v4'
+        storeImg(img, 'out/family/', save, isColor=False)
 
     # plt.imshow(img)
     # plt.show()
