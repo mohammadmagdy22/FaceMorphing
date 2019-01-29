@@ -360,6 +360,7 @@ def warpInv2(A, vtxA, B, vtxB, k, t):
     M[y, x] = t * aVal + (1-t) * bVal
     return M
 
+
 def autoContrast(img, i=(0, 1)):
 
     return i[0] + (img - img.min()) * (i[1] - i[0]) / (img.max() - img.min())
